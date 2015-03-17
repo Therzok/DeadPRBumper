@@ -15,8 +15,10 @@ namespace DeadPRBumper
 		{
 			string user = null; // Enter your GitHub username.
 			string pass = null; // Enter your GitHub pass/2FA token.
-			string owner = "mono";
-			string repo = "mono";
+			const string bumpMessage = "Any update on this?";
+			const string rebaseMessage = "This needs a rebase on top of the target branch.";
+			const string owner = "Therzok";
+			const string repo = "DeadPRBumper";
 
 			string input;
 			int months;
@@ -26,6 +28,9 @@ namespace DeadPRBumper
 			} while (!int.TryParse (input, out months));
 
 			var conn = new Connection (new ProductHeaderValue ("DeadPRBumper", "1.0"));
+			if (!string.IsNullOrEmpty (user) && !string.IsNullOrEmpty (pass))
+				conn.Credentials = new Credentials (user, pass);
+
 			var client = new GitHubClient (conn);
 
 			// Note: This means that the last push, comment, diff comment, whatever, happened two months ago.
@@ -34,13 +39,24 @@ namespace DeadPRBumper
 				.Where (pr => pr.UpdatedAt.AddMonths (months) < DateTimeOffset.UtcNow)
 				.ToList ();
 
-			foreach (var pr in prs)
+			foreach (var pr in prs) {
 				Console.WriteLine ("{0} - {1} days", pr.HtmlUrl, (DateTimeOffset.UtcNow - pr.UpdatedAt).Days);
+			}
 
 			if (user == null || pass == null)
 				return;
 
-			// do prompt.
+			Console.WriteLine ("Bump the PRs? y/n");
+			input = Console.ReadLine ();
+			if (input != "y")
+				return;
+
+			foreach (var pr in prs) {
+				var issueComment = client.Issue.Comment.Create (owner, repo, pr.Number, /*!pr.Mergeable.GetValueOrDefault () ? rebaseMessage :*/ bumpMessage).Result;
+				// Do stuff with it?
+			}
+			Console.WriteLine ("Press enter to exit...");
+			Console.ReadKey ();
 		}
 	}
 }
