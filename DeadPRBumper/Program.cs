@@ -55,6 +55,7 @@ namespace DeadPRBumper
 				var issueComment = client.Issue.Comment.Create (owner, repo, pr.Number, /*!pr.Mergeable.GetValueOrDefault () ? rebaseMessage :*/ bumpMessage).Result;
 				// Do stuff with it?
 			}
+			Console.WriteLine ("Press enter to exit...");
 			Console.ReadKey ();
 		}
 	}
