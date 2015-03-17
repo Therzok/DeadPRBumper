@@ -9,7 +9,7 @@ namespace DeadPRBumper
 	class MainClass
 	{
 		// TODO: Bump people with rebase if non-mergeable. Probably heuristic to check if someone asked.
-		// TODO: Filter who did last update. Someone from mono org or someone from outside.
+		// TODO: Filter who did last update. Someone from repo maintainers or someone from outside.
 		// TODO: Add per PR prompt.
 		public static void Main (string[] args)
 		{
